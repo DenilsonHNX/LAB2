@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
 
     /* one of these messages per thread */
     printf("Thread %d, almost..\n", tid);fflush(stdout);
+    #pragma omp barrier
     printf("Thread %d, done!\n", tid);  fflush(stdout);
   }
 
