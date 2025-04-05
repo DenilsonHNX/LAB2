@@ -28,11 +28,11 @@
 /* MAIN: PROCESS PARAMETERS */
 int main(int argc, char *argv[]) {
 
-  /* VARIABLES */
-  int i, iter;
-
-  /* DECLARE VECTOR AND AUX DATA STRUCTURES */
+  int i;
+  int iter;
   double *V = (double *) malloc(TOTALSIZE * sizeof(double));
+  double *Vcopy = (double *) malloc(TOTALSIZE * sizeof(double));
+
 
   /* 1. INITIALIZE VECTOR */
   for(i = 0; i < TOTALSIZE; i++) {
@@ -41,6 +41,8 @@ int main(int argc, char *argv[]) {
 
   /* 2. ITERATIONS LOOP */
   for(iter = 0; iter < NUMITER; iter++) {
+
+    memcpy(Vcopy, V, TOTALSIZE * sizeof(double));
 
     #pragma omp parallel for // adicao que foi feita
     /* 2.1. PROCESS ELEMENTS */
