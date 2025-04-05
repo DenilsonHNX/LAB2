@@ -1,62 +1,46 @@
-/*
-	Name: Lab#2
-	Copyright: 2021-22
-	Author: Prof. Joao Costa
-	Date: 06/04/22 17:24
-	Description: 
-		Parallelizing an inner loop with dependences
-	
-			for (iter=0; iter<numiter; iter++) {
-				for (i=0; i<size-1; i++) {
-					V[i] = f( V[i], V[i+1] );
-				}
-			}
-*/
-
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <omp.h>
 
 #define TOTALSIZE 1000
 #define NUMITER 200
-
-/*
-* DUMMY FUNCTION
-*/
-#define f(x,y)	((x+y)/2.0)
-
-
-/* MAIN: PROCESS PARAMETERS */
+#define f(x,y) ((x + y) / 2.0)
 int main(int argc, char *argv[]) {
+    int i, iter;
+    double *V1 = (double *) malloc(TOTALSIZE * sizeof(double));
+    double *V2 = (double *) malloc(TOTALSIZE * sizeof(double));
+    double *curr = V1, *next = V2, *temp;
 
-  int i;
-  int iter;
-  double *V = (double *) malloc(TOTALSIZE * sizeof(double));
-  double *Vcopy = (double *) malloc(TOTALSIZE * sizeof(double));
-
-
-  /* 1. INITIALIZE VECTOR */
-  for(i = 0; i < TOTALSIZE; i++) {
-    V[i]= 0.0 + i;
-  }
-
-  /* 2. ITERATIONS LOOP */
-  for(iter = 0; iter < NUMITER; iter++) {
-
-    memcpy(Vcopy, V, TOTALSIZE * sizeof(double));
-
-    #pragma omp parallel for // adicao que foi feita
-    /* 2.1. PROCESS ELEMENTS */
-    for(i = 0; i < TOTALSIZE-1; i++) {
-      V[i] = f(V[i], V[i+1]);
-    }
     
-    /* 2.2. END ITERATIONS LOOP */
-  }
+    for (i = 0; i < TOTALSIZE; i++) {
+        V1[i] = (double)i;
+    }
 
-  /* 3. OUTPUT FINAL VALUES */
-  printf("Output:\n"); 
-  for(i = 0; i < TOTALSIZE; i++) {
-    printf("%4d %f\n", i, V[i]);
-  }
+    
+    for (iter = 0; iter < NUMITER; iter++) {
+        #pragma omp parallel for
+        for (i = 0; i < TOTALSIZE - 1; i++) {
+            next[i] = f(curr[i], curr[i + 1]);
+        }
 
+        
+        next[TOTALSIZE - 1] = curr[TOTALSIZE - 1];
+
+       
+        temp = curr;
+        curr = next;
+        next = temp;
+    }
+
+   
+    printf("Output:\n");
+    for (i = 0; i < TOTALSIZE; i++) {
+        printf("%4d %f\n", i, curr[i]);
+    }
+
+    
+    free(V1);
+    free(V2);
+
+    return 0;
 }
