@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
   /* 2. ITERATIONS LOOP */
   for(iter = 0; iter < NUMITER; iter++) {
 
+    #pragma omp parallel for // adicao que foi feita
     /* 2.1. PROCESS ELEMENTS */
     for(i = 0; i < TOTALSIZE-1; i++) {
       V[i] = f(V[i], V[i+1]);
